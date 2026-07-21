@@ -1,0 +1,315 @@
+/* --- Tipografía Global y Fondo --- */
+body {
+  font-family: 'Pacifico', cursive, sans-serif;
+  
+  background-image: url('images/fondo.jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  
+  background-color: rgba(15, 23, 42, 0.75);
+  background-blend-mode: overlay;
+}
+
+/* Usar tipografía legible para números y botones */
+.score-board, .badge, .btn {
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* --- TÍTULO PRINCIPAL --- */
+.main-title {
+  font-family: 'Pacifico', cursive;
+  color: #2ecc71;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 15px rgba(46, 204, 113, 0.5);
+  line-height: 1.15;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.274);
+  font-size: clamp(1.1rem, 3.2vw, 2.2rem);
+}
+
+.title-line {
+  display: block;
+}
+
+.title-line.line-2 {
+  font-size: 0.75em;
+  margin: -4px 0;
+}
+
+/* Estado de Inicio (Antes de Repartir): Centrado en 3 líneas con animación */
+body.game-idle .main-title {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(2rem, 6.5vw, 4rem);
+  z-index: 100;
+  width: 90%;
+  pointer-events: none;
+}
+
+body.game-idle .title-line {
+  opacity: 0;
+  animation: lineSequenceFromBack 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.274) forwards;
+}
+
+body.game-idle .line-1 { animation-delay: 0.2s; }
+body.game-idle .line-2 { animation-delay: 0.7s; }
+body.game-idle .line-3 { animation-delay: 1.2s; }
+
+@keyframes lineSequenceFromBack {
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* --- AJUSTES EXCLUSIVOS PARA MÓVIL --- */
+@media (max-width: 576px) {
+  .controls-panel {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  /* Título en 1 sola línea durante el juego activo en celular */
+  body:not(.game-idle) .main-title {
+    font-size: clamp(0.9rem, 4.3vw, 1.25rem);
+    white-space: nowrap;
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+  }
+
+  body:not(.game-idle) .title-line {
+    display: inline;
+  }
+
+  body:not(.game-idle) .title-line.line-2 {
+    font-size: 1em;
+    margin: 0 4px;
+  }
+}
+
+/* --- TAMAÑOS DE ICONOS --- */
+.custom-icon-sm {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.custom-icon-lg {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+}
+
+/* --- Panel Superior --- */
+.controls-panel {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* --- CARTAS RESPONSIVE --- */
+.game-card {
+  aspect-ratio: 3 / 4;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  max-width: 120px;
+  margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 1140px;
+  }
+  .game-card {
+    max-width: 175px;
+  }
+}
+
+.card-back,
+.card-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  transition: transform 0.5s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  background-size: cover;
+  background-position: center;
+}
+
+.card-back {
+  background-image: url('images/reverso.jpg');
+}
+
+.card-front {
+  transform: rotateY(180deg);
+}
+
+.game-card.flipped .card-back {
+  transform: rotateY(-180deg);
+}
+
+.game-card.flipped .card-front {
+  transform: rotateY(0deg);
+}
+
+.game-card.matched .card-back {
+  background-image: url('images/reverso_pareja.jpg');
+}
+
+.game-card.matched .card-front {
+  border: 3px solid #2ecc71;
+  box-shadow: 0 0 12px #2ecc71;
+}
+
+/* --- Animación Repartir Cartas --- */
+@keyframes dealCard {
+  0% {
+    opacity: 0;
+    transform: translateY(-200px) scale(0.2) rotate(-20deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+.game-card.dealing {
+  animation: dealCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.274) forwards;
+  opacity: 0;
+}
+
+/* --- CARTEL DE VICTORIA: CONTENEDOR CON BORDE NEÓN ESMERALDA --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+}
+
+@keyframes floatBanner {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.3) translateY(40px); 
+  }
+  60% { 
+    opacity: 1; 
+    transform: scale(1.05) translateY(-8px); 
+  }
+  100% { 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+.modal-content-custom {
+  max-width: 90%;
+  width: 380px;
+  position: relative;
+  
+  background: rgba(18, 24, 32, 0.95); 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  
+  /* BORDE ESMERALDA NEÓN EN TODO EL MARCO */
+  border: 2px solid #00ff87 !important;
+  border-bottom: 7px solid #00ff87 !important;
+  
+  /* RESPLANDOR NEÓN ALREDEDOR DE TODA LA CAJA */
+  box-shadow: 
+    0 0 18px #00ff87,                        /* Halo neón brillante rodeando el borde */
+    0 0 35px rgba(0, 255, 135, 0.5),         /* Luz flúor expansiva */
+    inset 0 0 15px rgba(0, 255, 135, 0.25),   /* Brillo hacia el interior de la tarjeta */
+    0 20px 45px rgba(0, 0, 0, 0.95) !important;
+  
+  color: #ffffff;
+  animation: floatBanner 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.274) forwards;
+}
+
+.modal-title-text {
+  font-family: 'Pacifico', cursive;
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 15px rgba(0, 255, 135, 0.8);
+}
+
+.modal-body-text {
+  font-family: 'Fredoka', sans-serif;
+  color: #e2e8f0;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+}
+
+#grid-container.hidden-grid {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+<!-- HTML !-->
+<button class="button-30" role="button">Button 30</button>
+
+/* CSS */
+.button-30 {
+  align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #36395A;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono",monospace;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 18px;
+}
+
+.modal-content-custom:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+}
+
+.modal-content-custom:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.modal-content-custom:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+}
