@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Chango&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
 
   <!-- Estilos Personalizados -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.2.0">
 </head>
 <body class="game-idle d-flex flex-column align-items-center justify-content-between min-vh-100 p-2 p-sm-3">
 
@@ -24,6 +24,10 @@
     <span class="title-line line-1">Juego de Memoria</span>
     <span class="title-line line-2">Encuentra las parejas</span>
   </h1>
+  <!-- Botón para activar/desactivar Pantalla Completa -->
+<button id="btn-fullscreen" class="btn btn-outline-light btn-sm position-fixed top-0 end-0 m-3 z-3">
+  ⛶ Pantalla Completa
+</button>
 </header>
 
   <!-- Contenedor Principal de Cartas -->
@@ -111,6 +115,6 @@
   <!-- CDNs -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=2.2.0"></script>
 </body>
 </html>

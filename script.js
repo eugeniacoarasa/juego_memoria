@@ -469,3 +469,25 @@ if (btnVerRanking) {
         if (victoryModal) victoryModal.classList.remove('hidden');
     });
 }
+// Funcionalidad para Modo Pantalla Completa
+const btnFullscreen = document.getElementById('btn-fullscreen');
+
+if (btnFullscreen) {
+  btnFullscreen.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      // Entrar en pantalla completa
+      document.documentElement.requestFullscreen().then(() => {
+        btnFullscreen.textContent = '✕ Salir Fullscreen';
+      }).catch(err => {
+        console.log(`Error al intentar activar pantalla completa: ${err.message}`);
+      });
+    } else {
+      // Salir de pantalla completa
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          btnFullscreen.textContent = '⛶ Pantalla Completa';
+        });
+      }
+    }
+  });
+}

@@ -562,3 +562,45 @@ body.game-idle .score-board {
 .leaderboard-item:last-child {
   border-bottom: none;
 }
+/* Ajustes para pantallas pequeñas / móviles */
+@media (max-width: 768px) {
+  .game-card {
+    height: 110px; /* Reducción proporcional para evitar scroll */
+  }
+}
+/* Animación de latido neón para el botón reiniciar */
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 5px #00ff87, inset 0 0 5px #00ff87;
+  }
+  50% {
+    box-shadow: 0 0 18px #00ff87, inset 0 0 10px #00ff87;
+  }
+  100% {
+    box-shadow: 0 0 5px #00ff87, inset 0 0 5px #00ff87;
+  }
+}
+
+.btn-reiniciar, #btn-reset {
+  animation: neonPulse 2s infinite ease-in-out;
+}
+
+.btn-neon {
+  animation: neonPulse 2s infinite ease-in-out;
+}
+/* Botón Fullscreen estilo neón con letras verdes */
+#btn-fullscreen {
+  color: #00ff87 !important;                   /* Texto verde neón */
+  border: 1px solid #00ff87 !important;         /* Borde verde neón */
+  background-color: rgba(10, 15, 25, 0.7) !important; /* Fondo oscuro semi-transparente */
+  box-shadow: 0 0 8px rgba(0, 255, 135, 0.3);   /* Resplandor neón sutil */
+  backdrop-filter: blur(5px);                   /* Efecto de cristal esmerilado */
+  transition: all 0.3s ease;
+}
+
+/* Efecto cuando pasas el cursor o lo tocas */
+#btn-fullscreen:hover, #btn-fullscreen:active {
+  background-color: #00ff87 !important;
+  color: #0a0f19 !important;                    /* Texto oscuro al presionar */
+  box-shadow: 0 0 15px #00ff87;
+}
