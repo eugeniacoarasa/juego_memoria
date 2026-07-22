@@ -1,20 +1,139 @@
-// --- EFECTOS DE SONIDO ---
+// ==========================================
+// 1. EFECTOS DE SONIDO Y AUDIO
+// ==========================================
 const flipSound = new Audio('images/flip.mp3');
 const matchSound = new Audio('images/match.mp3');
 const failSound = new Audio('images/fail.mp3');
 const shuffleSound = new Audio('images/shuffle.mp3');
 const victorySound = new Audio('images/victory.mp3');
 
-// --- VARIABLES DE ESTADO ---
+let isMuted = false;
+
+const btnAudio = document.getElementById('btn-audio');
+const audioIcon = document.getElementById('audio-icon');
+
+if (btnAudio) {
+  btnAudio.addEventListener('click', () => {
+    isMuted = !isMuted;
+    if (isMuted) {
+      if (audioIcon) audioIcon.textContent = '🔇';
+      btnAudio.classList.add('muted');
+    } else {
+      if (audioIcon) audioIcon.textContent = '🔊';
+      btnAudio.classList.remove('muted');
+    }
+  });
+}
+
+function reproducirSonido(audio) {
+  if (!isMuted && audio) {
+    audio.currentTime = 0;
+    audio.play().catch(err => console.log("Audio play blocked/error:", err));
+  }
+}
+
+// ==========================================
+// 2. CELEBRACIÓN DE VICTORIA: PURPURINA DUAL
+// ==========================================
+let continuousConfettiInterval = null;
+let fgCanvas = null;
+let bgCanvas = null;
+
+function startVictoryConfetti() {
+  stopVictoryConfetti();
+
+  if (typeof confetti !== 'function') return;
+
+  // 1. CAPA FRONTAL (99999): Explosión inicial gigante por delante
+  fgCanvas = document.createElement('canvas');
+  fgCanvas.style.position = 'fixed';
+  fgCanvas.style.top = '0';
+  fgCanvas.style.left = '0';
+  fgCanvas.style.width = '100vw';
+  fgCanvas.style.height = '100vh';
+  fgCanvas.style.pointerEvents = 'none';
+  fgCanvas.style.zIndex = '99999';
+  document.body.appendChild(fgCanvas);
+
+  const fgConfetti = confetti.create(fgCanvas, { resize: true, useWorker: true });
+
+  fgConfetti({
+    particleCount: 140,
+    spread: 120,
+    origin: { y: 0.55 },
+    colors: ['#00ff87', '#a7f3d0', '#ffd700', '#ff007f', '#ffffff', '#60efff'],
+    ticks: 220,
+    gravity: 0.8,
+    scalar: 1.15
+  });
+
+  setTimeout(() => {
+    if (fgCanvas && fgCanvas.parentNode) {
+      fgCanvas.parentNode.removeChild(fgCanvas);
+      fgCanvas = null;
+    }
+  }, 3000);
+
+  // 2. CAPA TRASERA (501): Lluvia continua por DETRÁS de la caja del modal (502) pero SOBRE la cortina oscura (500)
+  bgCanvas = document.createElement('canvas');
+  bgCanvas.style.position = 'fixed';
+  bgCanvas.style.top = '0';
+  bgCanvas.style.left = '0';
+  bgCanvas.style.width = '100vw';
+  bgCanvas.style.height = '100vh';
+  bgCanvas.style.pointerEvents = 'none';
+  bgCanvas.style.zIndex = '501'; 
+  document.body.appendChild(bgCanvas);
+
+  const bgConfetti = confetti.create(bgCanvas, { resize: true, useWorker: true });
+
+  continuousConfettiInterval = setInterval(() => {
+    bgConfetti({
+      particleCount: 4,
+      angle: 60,
+      spread: 60,
+      origin: { x: 0, y: 0.75 },
+      colors: ['#00ff87', '#ffd700', '#60efff', '#ff007f']
+    });
+    bgConfetti({
+      particleCount: 4,
+      angle: 120,
+      spread: 60,
+      origin: { x: 1, y: 0.75 },
+      colors: ['#00ff87', '#ffd700', '#60efff', '#ff007f']
+    });
+  }, 380);
+}
+
+function stopVictoryConfetti() {
+  if (continuousConfettiInterval) {
+    clearInterval(continuousConfettiInterval);
+    continuousConfettiInterval = null;
+  }
+  if (fgCanvas && fgCanvas.parentNode) {
+    fgCanvas.parentNode.removeChild(fgCanvas);
+    fgCanvas = null;
+  }
+  if (bgCanvas && bgCanvas.parentNode) {
+    bgCanvas.parentNode.removeChild(bgCanvas);
+    bgCanvas = null;
+  }
+}
+
+// ==========================================
+// 3. VARIABLES DE ESTADO Y ELEMENTOS DOM
+// ==========================================
 let flippedCards = [];
 let moves = 0;
 let matches = 0;
 let lockBoard = false;
 
-// Variables de Temporizador y Modo
 let timerInterval = null;
 let secondsElapsed = 0;
 let currentMode = 'libre';
+
+let currentPairs = 6;
+let hintUsed = false;
 
 // Referencias al DOM
 const tablero = document.getElementById('grid-container');
@@ -25,25 +144,16 @@ const btnTextElement = document.getElementById('btn-text');
 const victoryModal = document.getElementById('victory-modal');
 const btnPlayAgain = document.getElementById('play-again-btn');
 
-const gameModeSelect = document.getElementById('gameMode');
 const timerContainer = document.getElementById('timerContainer');
 const timerDisplay = document.getElementById('timerDisplay');
 const modeSelectorContainer = document.getElementById('modeSelectorContainer');
+const difficultySelect = document.getElementById('difficultySelect');
+const gameModeSelect = document.getElementById('gameModeSelect');
+const btnHint = document.getElementById('btn-hint');
 
-// --- EVENTO: CAMBIO DE MODO DE JUEGO ---
-if (gameModeSelect) {
-  gameModeSelect.addEventListener('change', (e) => {
-    currentMode = e.target.value;
-    if (currentMode === 'cronometro') {
-      timerContainer.classList.remove('d-none');
-    } else {
-      timerContainer.classList.add('d-none');
-    }
-    resetTimer();
-  });
-}
-
-// --- FUNCIONES DEL CRONÓMETRO ---
+// ==========================================
+// 4. LÓGICA DEL CRONÓMETRO
+// ==========================================
 function startTimer() {
   stopTimer();
   secondsElapsed = 0;
@@ -71,37 +181,45 @@ function resetTimer() {
 function updateTimerDisplay() {
   const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
   const secs = (secondsElapsed % 60).toString().padStart(2, '0');
-  if (timerDisplay) timerDisplay.textContent = `${mins}:${secs}`;
+  if (timerDisplay) timerDisplay.textContent = mins + ':' + secs;
 }
 
-// --- CAMBIAR FONDO ALEATORIO ---
+// ==========================================
+// 5. GENERACIÓN DE IMÁGENES Y FONDO
+// ==========================================
 function cambiarFondoAleatorio() {
     const randomBgSeed = Math.floor(Math.random() * 5000);
-    const bgUrl = `https://picsum.photos/seed/bg_${randomBgSeed}/1920/1080`;
-    document.body.style.backgroundImage = `url('${bgUrl}')`;
+    const bgUrl = 'https://picsum.photos/seed/bg_' + randomBgSeed + '/1920/1080';
+    document.body.style.backgroundImage = 'url("' + bgUrl + '")';
 }
 
-// --- GENERAR IMÁGENES ALEATORIAS ---
 function obtenerNuevasImagenes() {
     const randomSeed = Math.floor(Math.random() * 10000);
     const imagenes = [];
-    for (let i = 1; i <= 6; i++) {
-        imagenes.push(`https://picsum.photos/seed/${randomSeed}_foto${i}/300/400`);
+    for (let i = 1; i <= currentPairs; i++) {
+        imagenes.push('https://picsum.photos/seed/' + randomSeed + '_foto' + i + '/300/400');
     }
     return imagenes;
 }
 
-// --- INICIAR / REINICIAR EL JUEGO ---
+// ==========================================
+// 6. INICIAR / REINICIAR EL JUEGO
+// ==========================================
 function initGame() {
-    // Quitar portada
+    stopVictoryConfetti();
     document.body.classList.remove('game-idle');
     
-    // Ocultar selector de modo durante la partida
     if (modeSelectorContainer) {
         modeSelectorContainer.classList.add('d-none');
     }
 
-    // Iniciar cronómetro si está en modo cronómetro
+    hintUsed = false;
+    if (btnHint) {
+      btnHint.disabled = false;
+      btnHint.classList.remove('used', 'd-none');
+      btnHint.textContent = '👁️ Pista (1x)';
+    }
+
     if (currentMode === 'cronometro') {
         if (timerContainer) timerContainer.classList.remove('d-none');
         startTimer();
@@ -110,7 +228,6 @@ function initGame() {
         resetTimer();
     }
 
-    // Cambiar texto del botón a "Reiniciar"
     if (btnTextElement) {
         btnTextElement.textContent = 'Reiniciar';
     }
@@ -121,17 +238,15 @@ function initGame() {
         victoryModal.classList.add('hidden');
     }
 
-    shuffleSound.currentTime = 0;
-    shuffleSound.play().catch(() => {});
+    reproducirSonido(shuffleSound);
 
-    // Resetear contadores
     moves = 0;
     matches = 0;
     flippedCards = [];
     lockBoard = false;
 
     if (movesElement) movesElement.textContent = '0';
-    if (matchesElement) matchesElement.textContent = '0/6';
+    if (matchesElement) matchesElement.textContent = '0/' + currentPairs;
 
     const imagenesBase = obtenerNuevasImagenes();
     let mazo = [...imagenesBase, ...imagenesBase];
@@ -140,7 +255,9 @@ function initGame() {
     renderizarTablero(mazo);
 }
 
-// --- DIBUJAR TABLERO ---
+// ==========================================
+// 7. DIBUJAR TABLERO Y CARTAS
+// ==========================================
 function renderizarTablero(mazo) {
     if (!tablero) return;
     tablero.innerHTML = '';
@@ -166,14 +283,15 @@ function renderizarTablero(mazo) {
     });
 }
 
-// --- VOLTEAR CARTA ---
+// ==========================================
+// 8. LÓGICA DE JUEGO (VOLTEAR Y COMPROBAR)
+// ==========================================
 function voltearCarta(card) {
     if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) {
         return;
     }
 
-    flipSound.currentTime = 0;
-    flipSound.play().catch(() => {});
+    reproducirSonido(flipSound);
 
     card.classList.add('flipped');
     flippedCards.push(card);
@@ -183,7 +301,6 @@ function voltearCarta(card) {
     }
 }
 
-// --- COMPROBAR PAREJA ---
 function comprobarPareja() {
     moves++;
     if (movesElement) movesElement.textContent = moves;
@@ -192,68 +309,54 @@ function comprobarPareja() {
     const esIgual = carta1.dataset.image === carta2.dataset.image;
 
     if (esIgual) {
-        matchSound.currentTime = 0;
-        matchSound.play().catch(() => {});
+        reproducirSonido(matchSound);
 
         carta1.classList.add('matched');
         carta2.classList.add('matched');
         matches++;
 
-        if (matchesElement) matchesElement.textContent = `${matches}/6`;
+        if (matchesElement) matchesElement.textContent = matches + '/' + currentPairs;
         flippedCards = [];
 
-        // VICTORIA
-        if (matches === 6) {
+        if (matches === currentPairs) {
             stopTimer();
             setTimeout(() => {
-                victorySound.currentTime = 0;
-                victorySound.play().catch(() => {});
+                reproducirSonido(victorySound);
+                
+                startVictoryConfetti();
 
-                if (typeof confetti === 'function') {
-                    confetti({
-                        particleCount: 120,
-                        spread: 80,
-                        origin: { y: 0.6 }
-                    });
+                const iconModal = document.querySelector('.modal-content-custom img');
+                const titleModal = document.querySelector('.modal-title-text');
+                const scoreDisplayGroup = document.getElementById('finalScoreDisplay')?.parentElement;
+                const leaderboardContainer = document.querySelector('.leaderboard-container');
+
+                if (iconModal) iconModal.classList.remove('d-none');
+                if (titleModal) titleModal.classList.remove('d-none');
+                if (btnPlayAgain) btnPlayAgain.textContent = '¿Jugar de nuevo?';
+
+                calcularPuntaje();
+                if (scoreDisplayGroup) scoreDisplayGroup.classList.remove('d-none');
+                if (scoreSaveContainer) scoreSaveContainer.classList.remove('d-none');
+                if (leaderboardContainer) leaderboardContainer.classList.remove('d-none');
+
+                const leaderboardTitle = document.querySelector('.leaderboard-container h6');
+                if (leaderboardTitle) {
+                    leaderboardTitle.textContent = currentMode === 'cronometro' 
+                        ? '🏆 Top 5 Récords (Cronómetro)' 
+                        : '🏆 Top 5 Récords (Modo Libre)';
                 }
 
-                // Elementos del modal de puntuación
-const iconModal = document.querySelector('.modal-content-custom img');
-const titleModal = document.querySelector('.modal-title-text');
-const scoreDisplayGroup = document.getElementById('finalScoreDisplay')?.parentElement;
-const leaderboardContainer = document.querySelector('.leaderboard-container');
+                actualizarLeaderboardUI();
 
-// Restaurar visibilidad por si se consultó el ranking en la portada previamente
-if (iconModal) iconModal.classList.remove('d-none');
-if (titleModal) titleModal.classList.remove('d-none');
-if (btnPlayAgain) btnPlayAgain.textContent = '¿Jugar de nuevo?';
-
-// Calculamos puntaje y mostramos ranking en ambos modos
-calcularPuntaje();
-if (scoreDisplayGroup) scoreDisplayGroup.classList.remove('d-none');
-if (scoreSaveContainer) scoreSaveContainer.classList.remove('d-none');
-if (leaderboardContainer) leaderboardContainer.classList.remove('d-none');
-
-// Actualizamos el título del ranking según el modo jugado
-const leaderboardTitle = document.querySelector('.leaderboard-container h6');
-if (leaderboardTitle) {
-    leaderboardTitle.textContent = currentMode === 'cronometro' 
-        ? '🏆 Top 5 Récords (Cronómetro)' 
-        : '🏆 Top 5 Récords (Modo Libre)';
-}
-
-actualizarLeaderboardUI();
-
-if (victoryModal) {
-    victoryModal.classList.remove('hidden');
-}
+                if (victoryModal) {
+                    victoryModal.classList.remove('hidden');
+                }
             }, 500);
         }
     } else {
         lockBoard = true;
         setTimeout(() => {
-            failSound.currentTime = 0;
-            failSound.play().catch(() => {});
+            reproducirSonido(failSound);
 
             carta1.classList.remove('flipped');
             carta2.classList.remove('flipped');
@@ -263,93 +366,135 @@ if (victoryModal) {
     }
 }
 
-// --- EVENTOS INICIALES ---
-document.addEventListener('DOMContentLoaded', () => {
-    cambiarFondoAleatorio();
-
-    if (btnRepartir) {
-        btnRepartir.addEventListener('click', () => {
-            // Si está en la portada, inicia el juego. Si ya está jugando, vuelve a la portada.
-            if (document.body.classList.contains('game-idle')) {
-                initGame();
-            } else {
-                volverAInicio();
-            }
-        });
-    }
-
-    if (btnPlayAgain) {
-        btnPlayAgain.addEventListener('click', () => {
-            if (victoryModal) victoryModal.classList.add('hidden');
-            volverAInicio();
-        });
-    }
-});
-
-// --- VOLVER A LA PORTADA / MENÚ PRINCIPAL ---
 function volverAInicio() {
+    stopVictoryConfetti();
     stopTimer();
     resetTimer();
     
-    // Regresamos el estado CSS a la portada
     document.body.classList.add('game-idle');
     
-    // Mostramos nuevamente el selector de modo y el botón en "Iniciar Juego"
     if (modeSelectorContainer) modeSelectorContainer.classList.remove('d-none');
     if (btnTextElement) btnTextElement.textContent = 'Iniciar Juego';
+    if (btnHint) btnHint.classList.add('d-none');
     
-    // Limpiamos el tablero
     if (tablero) tablero.innerHTML = '';
 }
 
 // ==========================================
-// MANEJO DEL SELECTOR DE MODO (DROPDOWN)
+// 9. DIFICULTAD ADAPTATIVA SEGÚN PANTALLA
 // ==========================================
-const gameModeBtn = document.getElementById('gameModeBtn');
-const gameModeMenu = document.querySelector('.glass-dropdown-menu');
+function actualizarOpcionesDificultad() {
+  const width = window.innerWidth;
+  const select = document.getElementById('difficultySelect');
+  if (!select) return;
 
-if (gameModeBtn && gameModeMenu) {
-  // 1. Abrir/Cerrar menú al hacer clic en el botón
-  gameModeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    gameModeMenu.classList.toggle('show');
+  const valorPrevio = select.value;
+  select.innerHTML = '';
+
+  let opciones = [];
+
+  if (width < 576) {
+    opciones = [
+      { value: 'easy', text: '🌱 Fácil (8)', pairs: 4 },
+      { value: 'normal', text: '⚡ Normal (12)', pairs: 6 }
+    ];
+  } else if (width < 1200) {
+    opciones = [
+      { value: 'easy', text: '🌱 Fácil (8)', pairs: 4 },
+      { value: 'normal', text: '⚡ Normal (12)', pairs: 6 },
+      { value: 'hard', text: '🔥 Difícil (16)', pairs: 8 },
+      { value: 'extreme', text: '💥 Extremo (18)', pairs: 9 }
+    ];
+  } else {
+    opciones = [
+      { value: 'easy', text: '🌱 Fácil (8)', pairs: 4 },
+      { value: 'normal', text: '⚡ Normal (12)', pairs: 6 },
+      { value: 'hard', text: '🔥 Difícil (16)', pairs: 8 },
+      { value: 'expert', text: '🚀 Experto (20)', pairs: 10 },
+      { value: 'legend', text: '👑 Leyenda (24)', pairs: 12 }
+    ];
+  }
+
+  opciones.forEach(op => {
+    const opt = document.createElement('option');
+    opt.value = op.value;
+    opt.textContent = op.text;
+    opt.dataset.pairs = op.pairs;
+    select.appendChild(opt);
   });
 
-  // 2. Selección de opción
-  document.querySelectorAll('.glass-dropdown-menu .dropdown-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Cambiar clase activa
-      document.querySelectorAll('.glass-dropdown-menu .dropdown-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-      
-      // Guardar modo y actualizar botón
-      currentMode = item.getAttribute('data-value');
-      gameModeBtn.textContent = item.textContent;
+  if (opciones.some(o => o.value === valorPrevio)) {
+    select.value = valorPrevio;
+  } else {
+    select.value = 'normal';
+  }
 
-      // Mostrar u ocultar el reloj
-      if (currentMode === 'cronometro') {
-        if (timerContainer) timerContainer.classList.remove('d-none');
-      } else {
-        if (timerContainer) timerContainer.classList.add('d-none');
-      }
-      resetTimer();
+  actualizarParejasDesdeSelect();
+}
 
-      // Cerrar menú tras elegir
-      gameModeMenu.classList.remove('show');
-    });
+function actualizarParejasDesdeSelect() {
+  const select = document.getElementById('difficultySelect');
+  if (!select) return;
+  const selectedOpt = select.options[select.selectedIndex];
+  if (selectedOpt && selectedOpt.dataset.pairs) {
+    currentPairs = parseInt(selectedOpt.dataset.pairs, 10);
+  }
+}
+
+// ==========================================
+// 10. EVENTOS DE SELECTORES Y CONTROLES
+// ==========================================
+if (gameModeSelect) {
+  gameModeSelect.addEventListener('change', (e) => {
+    currentMode = e.target.value;
+
+    if (currentMode === 'cronometro') {
+      if (timerContainer) timerContainer.classList.remove('d-none');
+    } else {
+      if (timerContainer) timerContainer.classList.add('d-none');
+    }
+    resetTimer();
   });
+}
 
-  // 3. Cerrar el menú si el usuario hace clic en cualquier otra parte de la pantalla
-  document.addEventListener('click', () => {
-    gameModeMenu.classList.remove('show');
+const diffSelectEl = document.getElementById('difficultySelect');
+if (diffSelectEl) {
+  diffSelectEl.addEventListener('change', actualizarParejasDesdeSelect);
+}
+
+window.addEventListener('resize', () => {
+  if (document.body.classList.contains('game-idle')) {
+    actualizarOpcionesDificultad();
+  }
+});
+
+// ==========================================
+// 11. COMODÍN DE PISTA
+// ==========================================
+if (btnHint) {
+  btnHint.addEventListener('click', () => {
+    if (hintUsed || lockBoard || document.body.classList.contains('game-idle')) return;
+
+    hintUsed = true;
+    btnHint.disabled = true;
+    btnHint.classList.add('used');
+    btnHint.textContent = '👁️ Pista Usada';
+
+    lockBoard = true;
+    const unrevealedCards = document.querySelectorAll('.game-card:not(.matched):not(.flipped)');
+
+    unrevealedCards.forEach(card => card.classList.add('flipped'));
+    reproducirSonido(flipSound);
+
+    setTimeout(() => {
+      unrevealedCards.forEach(card => card.classList.remove('flipped'));
+      lockBoard = false;
+    }, 1500);
   });
 }
 
 // ==========================================
-// SISTEMA DE PUNTAJE Y RANKING (TOP 5)
+// 12. PUNTAJE Y RANKING (LOCALSTORAGE)
 // ==========================================
 const finalScoreDisplay = document.getElementById('finalScoreDisplay');
 const playerNameInput = document.getElementById('playerNameInput');
@@ -359,25 +504,23 @@ const scoreSaveContainer = document.getElementById('scoreSaveContainer');
 
 let currentScore = 0;
 
-// Fórmula de Puntuación
 function calcularPuntaje() {
-    const basePoints = 1000;
+    const basePoints = currentPairs * 200;
     const penaltyMoves = moves * 15;
     const penaltyTime = (currentMode === 'cronometro') ? secondsElapsed * 5 : 0;
+    const penaltyHint = hintUsed ? 150 : 0;
     
-    currentScore = Math.max(0, basePoints - penaltyMoves - penaltyTime);
+    currentScore = Math.max(0, basePoints - penaltyMoves - penaltyTime - penaltyHint);
     
     if (finalScoreDisplay) {
-        finalScoreDisplay.textContent = `${currentScore} pts`;
+        finalScoreDisplay.textContent = currentScore + ' pts';
     }
 }
 
-// Obtener la clave de localStorage según el modo activo
 function getRankingStorageKey() {
     return currentMode === 'cronometro' ? 'memoria_ranking_crono' : 'memoria_ranking_libre';
 }
 
-// Cargar y mostrar la lista desde localStorage
 function actualizarLeaderboardUI() {
     if (!leaderboardList) return;
     
@@ -401,7 +544,6 @@ function actualizarLeaderboardUI() {
     });
 }
 
-// Guardar récord al hacer clic en el botón
 if (saveScoreBtn) {
     saveScoreBtn.addEventListener('click', () => {
         const nombre = (playerNameInput.value.trim() || 'ANON').toUpperCase();
@@ -410,7 +552,7 @@ if (saveScoreBtn) {
 
         ranking.push({ nombre, puntos: currentScore });
         ranking.sort((a, b) => b.puntos - a.puntos);
-        ranking = ranking.slice(0, 5); // Guardar solo Top 5
+        ranking = ranking.slice(0, 5);
 
         localStorage.setItem(key, JSON.stringify(ranking));
 
@@ -420,26 +562,17 @@ if (saveScoreBtn) {
     });
 }
 
-// Validar input de iniciales (máximo 3 caracteres, solo letras)
 if (playerNameInput) {
     playerNameInput.addEventListener('input', (e) => {
-        // Convierte a mayúsculas y elimina cualquier carácter que no sea letra
         let valor = e.target.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÑ]/g, '');
-        // Corta estrictamente a 3 caracteres
-        if (valor.length > 3) {
-            valor = valor.slice(0, 3);
-        }
+        if (valor.length > 3) valor = valor.slice(0, 3);
         e.target.value = valor;
     });
 }
-// ==========================================
-// MOSTRAR RANKING DESDE LA PORTADA
-// ==========================================
-const btnVerRanking = document.getElementById('btn-ver-ranking');
 
+const btnVerRanking = document.getElementById('btn-ver-ranking');
 if (btnVerRanking) {
     btnVerRanking.addEventListener('click', () => {
-        // Ocultar elementos exclusivos de la pantalla de victoria
         const iconModal = document.querySelector('.modal-content-custom img');
         const titleModal = document.querySelector('.modal-title-text');
         const scoreDisplayGroup = document.getElementById('finalScoreDisplay')?.parentElement;
@@ -449,11 +582,9 @@ if (btnVerRanking) {
         if (scoreDisplayGroup) scoreDisplayGroup.classList.add('d-none');
         if (scoreSaveContainer) scoreSaveContainer.classList.add('d-none');
 
-        // Mostrar ranking
         const leaderboardContainer = document.querySelector('.leaderboard-container');
         if (leaderboardContainer) leaderboardContainer.classList.remove('d-none');
 
-        // Título según el modo seleccionado
         const leaderboardTitle = document.querySelector('.leaderboard-container h6');
         if (leaderboardTitle) {
             leaderboardTitle.textContent = currentMode === 'cronometro' 
@@ -462,32 +593,113 @@ if (btnVerRanking) {
         }
 
         actualizarLeaderboardUI();
-
-        // Cambiar texto del botón a "Cerrar"
         if (btnPlayAgain) btnPlayAgain.textContent = 'Cerrar';
-
         if (victoryModal) victoryModal.classList.remove('hidden');
     });
 }
-// Funcionalidad para Modo Pantalla Completa
-const btnFullscreen = document.getElementById('btn-fullscreen');
 
+// ==========================================
+// 13. PANTALLA COMPLETA
+// ==========================================
+const btnFullscreen = document.getElementById('btn-fullscreen');
 if (btnFullscreen) {
   btnFullscreen.addEventListener('click', () => {
+    const fsIcon = btnFullscreen.querySelector('.fs-icon');
+    const fsText = btnFullscreen.querySelector('.fs-text');
+
     if (!document.fullscreenElement) {
-      // Entrar en pantalla completa
       document.documentElement.requestFullscreen().then(() => {
-        btnFullscreen.textContent = '✕ Salir Fullscreen';
-      }).catch(err => {
-        console.log(`Error al intentar activar pantalla completa: ${err.message}`);
-      });
+        if (fsIcon) fsIcon.textContent = '✕';
+        if (fsText) fsText.textContent = ' Salir';
+      }).catch(err => console.log('Fullscreen error:', err));
     } else {
-      // Salir de pantalla completa
       if (document.exitFullscreen) {
         document.exitFullscreen().then(() => {
-          btnFullscreen.textContent = '⛶ Pantalla Completa';
+          if (fsIcon) fsIcon.textContent = '⛶';
+          if (fsText) fsText.textContent = ' Pantalla Completa';
         });
       }
     }
   });
 }
+
+// ==========================================
+// 14. ANIMACIÓN DEL TÍTULO EN PORTADA (IMG1 A IMG6)
+// ==========================================
+const letterImages = [
+  'images/img1.jpg',
+  'images/img2.jpg',
+  'images/img3.jpg',
+  'images/img4.jpg',
+  'images/img5.jpg',
+  'images/img6.jpg'
+];
+
+function initAnimatedTitle() {
+  const words = document.querySelectorAll('.title-word');
+  if (!words.length) return;
+
+  words.forEach(wordEl => {
+    const text = wordEl.textContent;
+    wordEl.innerHTML = '';
+    [...text].forEach(char => {
+      const span = document.createElement('span');
+      span.className = 'letter-animated';
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      wordEl.appendChild(span);
+    });
+  });
+
+  const isMobile = window.innerWidth < 768;
+  const intervalTime = isMobile ? 3000 : 1800; 
+
+  setInterval(flipRandomLetter, intervalTime);
+}
+
+function flipRandomLetter() {
+  // SOLO VOLTEAR LETRAS SI ESTAMOS EN LA PORTADA
+  if (!document.body.classList.contains('game-idle')) return;
+
+  const letters = document.querySelectorAll('.letter-animated');
+  if (!letters.length) return;
+
+  const validLetters = Array.from(letters).filter(l => l.textContent.trim() !== '');
+  const randomSpan = validLetters[Math.floor(Math.random() * validLetters.length)];
+
+  const randomImg = letterImages[Math.floor(Math.random() * letterImages.length)];
+
+  randomSpan.style.backgroundImage = `url('${randomImg}')`;
+  randomSpan.classList.add('flipping');
+
+  setTimeout(() => {
+    randomSpan.classList.remove('flipping');
+    randomSpan.style.backgroundImage = 'none';
+  }, 850);
+}
+
+// ==========================================
+// 15. INICIAR AL CARGAR EL DOCUMENTO
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    actualizarOpcionesDificultad();
+    cambiarFondoAleatorio();
+    initAnimatedTitle();
+
+    if (btnRepartir) {
+        btnRepartir.addEventListener('click', () => {
+            if (document.body.classList.contains('game-idle')) {
+                initGame();
+            } else {
+                volverAInicio();
+            }
+        });
+    }
+
+    if (btnPlayAgain) {
+        btnPlayAgain.addEventListener('click', () => {
+            stopVictoryConfetti();
+            if (victoryModal) victoryModal.classList.add('hidden');
+            volverAInicio();
+        });
+    }
+});

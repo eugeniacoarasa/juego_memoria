@@ -1,4 +1,6 @@
-/* --- Tipografía Global y Fondo --- */
+/* ==========================================
+   1. CONFIGURACIÓN GLOBAL Y TIPOGRAFÍA
+   ========================================== */
 body {
   font-family: 'Nunito Sans', sans-serif;
   background-size: cover;
@@ -10,7 +12,59 @@ body {
   transition: background-image 0.8s ease-in-out;
 }
 
-/* --- ESTILO BOTÓN NEÓN ESMERALDA --- */
+/* ==========================================
+   2. BOTONES FLOTANTES FIJOS (Audio & Fullscreen)
+   ========================================== */
+.top-controls-fixed {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 9999;
+}
+
+.btn-icon-neon {
+  color: #00ff87 !important;
+  border: 1px solid #00ff87 !important;
+  background-color: rgba(10, 15, 25, 0.85) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 135, 0.3);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-icon-neon:hover, 
+.btn-icon-neon:active {
+  background-color: #00ff87 !important;
+  color: #0a0f19 !important;
+  box-shadow: 0 0 15px #00ff87;
+}
+
+#btn-audio.muted {
+  border-color: #ff4757 !important;
+  color: #ff4757 !important;
+  box-shadow: 0 0 8px rgba(255, 71, 87, 0.3);
+}
+
+/* ==========================================
+   3. ESTILOS NEÓN Y BOTONES PRINCIPALES
+   ========================================== */
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px #00ff87, inset 0 0 5px #00ff87; }
+  50% { box-shadow: 0 0 18px #00ff87, inset 0 0 10px #00ff87; }
+  100% { box-shadow: 0 0 5px #00ff87, inset 0 0 5px #00ff87; }
+}
+
 .btn-neon {
   background: rgba(18, 24, 32, 0.9) !important;
   color: #ffffff !important;
@@ -19,224 +73,293 @@ body {
   border: 2px solid #00ff87 !important;
   border-bottom: 4px solid #00ff87 !important;
   border-radius: 12px;
-  box-shadow: 
-    0 0 12px rgba(0, 255, 135, 0.6), 
-    inset 0 0 8px rgba(0, 255, 135, 0.3);
+  box-shadow: 0 0 12px rgba(0, 255, 135, 0.6), inset 0 0 8px rgba(0, 255, 135, 0.3);
   transition: all 0.3s ease;
   text-transform: none;
   letter-spacing: 0.5px;
+  animation: neonPulse 2s infinite ease-in-out;
 }
 
 .btn-neon:hover {
   background: rgba(0, 255, 135, 0.15) !important;
   color: #00ff87 !important;
-  box-shadow: 
-    0 0 20px #00ff87, 
-    inset 0 0 12px rgba(0, 255, 135, 0.5);
+  box-shadow: 0 0 20px #00ff87, inset 0 0 12px rgba(0, 255, 135, 0.5);
   transform: translateY(-2px);
 }
 
-.btn-neon:active {
-  transform: translateY(1px);
-  box-shadow: 0 0 8px #00ff87;
-}
-
-/* --- ESTILO CAJAS DE CONTADORES (BADGES) NEÓN --- */
 .badge-neon {
   background-color: #000000 !important;
   color: #00ff87 !important;
   border: 1.5px solid #00ff80 !important;
   border-radius: 8px !important;
-  box-shadow: 
-    0 0 8px rgba(0, 255, 135, 0.5), 
-    inset 0 0 4px rgba(0, 255, 135, 0.2);
+  box-shadow: 0 0 8px rgba(0, 255, 135, 0.5), inset 0 0 4px rgba(0, 255, 135, 0.2);
   font-family: 'Nunito Sans', sans-serif;
   font-weight: 800;
   font-size: 0.95rem;
   padding: 5px 12px !important;
 }
 
-/* --- TÍTULO PRINCIPAL --- */
-.main-title {
-  color: #2ecc71;
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 15px rgba(46, 204, 113, 0.5);
-  line-height: 1.25;
-  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.274);
-}
-
-/* Línea 1: CHANGO (Modo juego activo) */
-.title-line.line-1 {
-  display: block;
-  font-family: 'Chango', cursive;
-  font-weight: 400;
-  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
-}
-
-/* Línea 2: NUNITO SANS (Modo juego activo) */
-.title-line.line-2 {
-  display: block;
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 800;
-  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #a7f3d0;
-  margin-top: 4px;
-}
-
-/* --- PORTADA (GAME-IDLE): TÍTULO GRANDE Y PROPORCIONAL --- */
-body.game-idle .main-title {
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 100;
-  width: 95%;
-  max-width: 1300px;
-  pointer-events: none;
-}
-
-/* Título Chango destacado en la portada */
-body.game-idle .title-line.line-1 {
-  font-size: clamp(2.2rem, 5.5vw, 4.8rem);
-  letter-spacing: 1px;
-}
-
-/* Subtítulo Nunito Sans en la portada */
-body.game-idle .title-line.line-2 {
-  font-size: clamp(1rem, 2.2vw, 1.9rem);
-  letter-spacing: 4px;
-  margin-top: 10px;
-}
-
-body.game-idle .title-line {
-  opacity: 0;
-  animation: lineSequenceFromBack 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-body.game-idle .line-1 { animation-delay: 0.3s; }
-body.game-idle .line-2 { animation-delay: 1.1s; }
-
-@keyframes lineSequenceFromBack {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-    filter: blur(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-/* Ocultar tablero y marcador durante la Portada */
-body.game-idle #grid-container {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
+/* OCULTAR MOVIMIENTOS Y PAREJAS EN PORTADA */
 body.game-idle .score-board {
   display: none !important;
 }
 
-#grid-container {
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-/* --- Panel de Controles --- */
-.controls-panel {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  z-index: 101;
-}
-
-/* --- ESTILO DEL SELECTOR / MENÚ DESPLEGABLE --- */
 /* ==========================================
-   DROPDOWN CUSTOMIZADO (Desplegable Neón)
+   4. TÍTULO CON RELLENO OSCURO Y NEÓN SUTIL
    ========================================== */
-.custom-mode-dropdown {
-  position: relative;
+
+.header-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 48vh;
+  margin: auto !important;
+  padding: 15px 10px;
+  box-sizing: border-box;
 }
 
-.glass-select-btn {
-  background: rgba(10, 25, 20, 0.85) !important;
+.main-title-animated {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 0 0.8rem 0 !important;
+  padding: 0;
+  line-height: 1.05;
+}
+
+/* Letras de color azul oscuro con borde e iluminación neón suave */
+.title-word {
+  display: block !important;
+  white-space: nowrap !important;
+  font-family: 'Chango', cursive, sans-serif !important;
+  font-size: clamp(3rem, 10vw, 6.2rem) !important;
+  letter-spacing: 2px;
+  color: #0a0f19 !important; /* Relleno oscuro elegante como las cartas */
+  -webkit-text-stroke: 1.8px #00ff87; /* Borde neón verdoso */
+  text-shadow: 0 0 8px rgba(0, 255, 135, 0.4), 0 0 16px rgba(0, 255, 135, 0.2); /* Halo neón sutil */
+  text-transform: uppercase;
+}
+
+.title-word:nth-child(2) {
+  font-size: clamp(1.8rem, 6vw, 3.5rem) !important;
+  color: #0a0f19 !important;
+  -webkit-text-stroke: 1.5px #00ff87;
+  text-shadow: 0 0 8px rgba(0, 255, 135, 0.4), 0 0 16px rgba(0, 255, 135, 0.2);
+}
+
+.subtitle-animated {
+  font-family: 'Nunito Sans', sans-serif !important;
+  font-size: clamp(1.1rem, 3.5vw, 1.8rem) !important;
+  color: #a7f3d0 !important;
+  letter-spacing: 4px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 8px !important;
+  text-shadow: 0 0 10px rgba(0, 255, 135, 0.4), 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+.letter-animated {
+  display: inline-block;
+  perspective: 1000px;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* ANIMACIÓN FLOTANTE CON IMAGEN DE FONDO VISIBLE */
+.letter-animated.flipping {
+  transform: rotateY(360deg);
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  -webkit-text-stroke: 0px transparent !important; /* Quitamos borde para revelar la imagen limpia */
+  text-shadow: none !important;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 135, 0.6)); /* Sombra neón por detrás para efecto flotante */
+}
+
+/* --- TÍTULO EN 1 LÍNEA EN PC (>= 1200px) --- */
+@media (min-width: 1200px) {
+  body:not(.game-idle) .header-container {
+    min-height: auto !important;
+    padding: 5px 0 10px 0 !important;
+    margin: 0 auto !important;
+  }
+
+  body:not(.game-idle) .main-title-animated {
+    flex-direction: row !important;
+    gap: 16px !important;
+    margin: 0 !important;
+  }
+
+  body:not(.game-idle) .title-word,
+  body:not(.game-idle) .title-word:nth-child(2) {
+    display: inline-block !important;
+    font-size: 2.2rem !important;
+    color: #0a0f19 !important;
+    -webkit-text-stroke: 1.5px #00ff87 !important;
+    text-shadow: 0 0 8px rgba(0, 255, 135, 0.4), 0 0 16px rgba(0, 255, 135, 0.2) !important;
+  }
+
+  body:not(.game-idle) .subtitle-animated {
+    display: none !important;
+  }
+}
+
+/* Ocultar título en la partida en Móviles y Tablets (< 1200px) */
+@media (max-width: 1199px) {
+  body:not(.game-idle) .header-container {
+    display: none !important;
+  }
+}
+
+/* ==========================================
+   5. PANEL DE CONTROLES, SELECTS Y PISTA
+   ========================================== */
+.controls-panel {
+  background: rgba(10, 15, 25, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid #00ff87;
+  border-radius: 50px;
+  padding: 8px 24px;
+  margin: 10px auto 0 auto;
+  width: fit-content;
+  max-width: 95vw;
+  box-shadow: 0 0 15px rgba(0, 255, 135, 0.3), inset 0 0 10px rgba(0, 255, 135, 0.1);
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.mode-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.glass-select {
+  background: rgba(10, 25, 20, 0.85) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300ffaa' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>") no-repeat right 12px center !important;
   border: 1.5px solid #00ffaa !important;
   color: #a3ffdb !important;
   border-radius: 20px !important;
-  padding: 4px 18px !important;
+  padding: 5px 32px 5px 16px !important;
   font-size: 0.85rem !important;
   font-weight: 700 !important;
   backdrop-filter: blur(8px);
   box-shadow: 0 0 10px rgba(0, 255, 170, 0.2);
+  appearance: none;
+  cursor: pointer;
+  outline: none;
 }
 
-.glass-dropdown-menu {
-  display: none; /* Nace oculto */
-  position: absolute;
-  bottom: 100%; /* Se despliega hacia arriba */
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 8px;
-  background: rgba(10, 25, 20, 0.95) !important;
+#btn-ver-ranking, #btn-hint, .glass-select-btn {
+  background: rgba(0, 255, 170, 0.1) !important;
   border: 1.5px solid #00ffaa !important;
-  border-radius: 16px !important; /* Bordes redondeados */
-  backdrop-filter: blur(12px);
-  min-width: 140px;
-  padding: 4px 0 !important;
-  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
-  z-index: 1050 !important;
-}
-
-/* Clase activa para mostrar el menú */
-.glass-dropdown-menu.show {
-  display: block !important;
-}
-
-.glass-dropdown-menu .dropdown-item {
   color: #a3ffdb !important;
-  font-weight: 600;
-  font-size: 0.85rem;
-  padding: 6px 16px;
-  transition: all 0.2s ease;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  padding: 6px 16px !important;
+  border-radius: 20px !important;
+  cursor: pointer !important;
+  display: inline-flex;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-shadow: 0 0 8px rgba(0, 255, 170, 0.2) !important;
+  text-decoration: none !important;
 }
 
-.glass-dropdown-menu .dropdown-item:hover,
-.glass-dropdown-menu .dropdown-item.active {
-  background-color: rgba(0, 255, 170, 0.25) !important;
-  color: #00ffaa !important;
+body.game-idle #btn-hint, #btn-hint.d-none {
+  display: none !important;
 }
 
-.custom-icon-lg {
-  width: 85px;
-  height: 85px;
-  object-fit: contain;
+#btn-hint:disabled, #btn-hint.used {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
 }
 
-/* --- CARTAS RESPONSIVE --- */
+@media (min-width: 576px) {
+  .controls-panel {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    border-radius: 50px !important;
+    padding: 8px 24px !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .controls-panel {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    border-radius: 20px !important;
+    padding: 10px 14px !important;
+    gap: 8px !important;
+  }
+
+  .score-board {
+    flex: 0 0 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  #btn-hint, #restart-btn {
+    flex: 1 1 auto !important;
+    max-width: 48% !important;
+    font-size: 0.8rem !important;
+    padding: 6px 10px !important;
+    white-space: nowrap !important;
+    text-align: center;
+  }
+}
+
+/* ==========================================
+   6. TABLERO Y CARTAS
+   ========================================== */
 .game-card {
   aspect-ratio: 3 / 4;
   perspective: 1000px;
   cursor: pointer;
   position: relative;
   width: 100%;
-  max-width: 120px;
+  max-width: 110px;
+  max-height: 18vh;
   margin: 0 auto;
 }
 
-@media (min-width: 992px) {
-  .container {
-    max-width: 1140px;
-  }
+@media (min-width: 576px) {
   .game-card {
-    max-width: 175px;
+    max-width: 120px;
+    max-height: 19vh;
   }
 }
 
-.card-back,
-.card-front {
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1250px;
+  }
+  .game-card {
+    max-width: 135px;
+    max-height: 16.5vh;
+  }
+}
+
+.card-back, .card-front {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -249,41 +372,19 @@ body.game-idle .score-board {
   overflow: hidden;
 }
 
-/* Reverso de la carta con resplandor Neón intenso */
 .card-back {
   background-image: url('images/reverso.jpg');
   border: 2px solid #00ff87 !important;
-  box-shadow: 
-    0 0 8px #00ff87,
-    0 0 18px rgba(0, 255, 135, 0.7),
-    inset 0 0 12px rgba(0, 255, 135, 0.5) !important;
-  transition: all 0.3s ease;
-}
-
-/* Efecto Neón aún más potente al pasar el cursor (Hover) */
-.game-card:hover .card-back {
-  border-color: #00ffaa !important;
-  box-shadow: 
-    0 0 12px #00ffaa,
-    0 0 25px #00ffaa,
-    0 0 35px rgba(0, 255, 170, 0.8),
-    inset 0 0 15px rgba(0, 255, 170, 0.7) !important;
-  transform: scale(1.03);
+  box-shadow: 0 0 8px #00ff87, 0 0 18px rgba(0, 255, 135, 0.7), inset 0 0 12px rgba(0, 255, 135, 0.5) !important;
 }
 
 .card-front {
   transform: rotateY(180deg);
 }
 
-.game-card.flipped .card-back {
-  transform: rotateY(-180deg);
-}
+.game-card.flipped .card-back { transform: rotateY(-180deg); }
+.game-card.flipped .card-front { transform: rotateY(0deg); }
 
-.game-card.flipped .card-front {
-  transform: rotateY(0deg);
-}
-
-/* PAREJAS ENCONTRADAS (MARCO Y TICK FLOTANTE NEÓN) */
 .game-card.matched .card-front {
   border: 3px solid #00ff87;
   box-shadow: 0 0 15px #00ff80, inset 0 0 10px rgba(0, 255, 135, 0.3);
@@ -296,46 +397,14 @@ body.game-idle .score-board {
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 3.5rem;
-  font-family: 'Nunito Sans', sans-serif;
   font-weight: 800;
   color: #00ff87;
-  text-shadow: 
-    0 0 12px #00ff87,
-    0 0 25px #00ff87,
-    2px 2px 6px rgba(0, 0, 0, 0.9);
-  pointer-events: none;
-  z-index: 10;
-  animation: popCheck 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.274) forwards;
+  text-shadow: 0 0 12px #00ff87, 0 0 25px #00ff87, 2px 2px 6px rgba(0, 0, 0, 0.9);
 }
 
-@keyframes popCheck {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.2) rotate(-20deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
-  }
-}
-
-/* Animación Repartir Cartas */
-@keyframes dealCard {
-  0% {
-    opacity: 0;
-    transform: translateY(-200px) scale(0.2) rotate(-20deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
-  }
-}
-
-.game-card.dealing {
-  animation: dealCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.274) forwards;
-}
-
-/* --- CARTEL DE VICTORIA --- */
+/* ==========================================
+   7. MODAL DE VICTORIA Y CAPAS DE CONFETI
+   ========================================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -354,174 +423,23 @@ body.game-idle .score-board {
   display: none !important;
 }
 
-@keyframes floatBanner {
-  0% { 
-    opacity: 0; 
-    transform: scale(0.3) translateY(40px); 
-  }
-  60% { 
-    opacity: 1; 
-    transform: scale(1.05) translateY(-8px); 
-  }
-  100% { 
-    transform: scale(1) translateY(0); 
-  }
-}
-
 .modal-content-custom {
   max-width: 90%;
   width: 380px;
   position: relative;
+  z-index: 502;
   background: rgba(18, 24, 32, 0.95); 
   backdrop-filter: blur(20px);
   border-radius: 20px;
   border: 2px solid #00ff87 !important;
   border-bottom: 7px solid #00ff87 !important;
-  box-shadow: 
-    0 0 18px #00ff87,
-    0 0 35px rgba(0, 255, 135, 0.5),
-    inset 0 0 15px rgba(0, 255, 135, 0.25),
-    0 20px 45px rgba(0, 0, 0, 0.95) !important;
+  box-shadow: 0 0 18px #00ff87, 0 0 35px rgba(0, 255, 135, 0.5), inset 0 0 15px rgba(0, 255, 135, 0.25), 0 20px 45px rgba(0, 0, 0, 0.95) !important;
   color: #ffffff;
-  animation: floatBanner 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.274) forwards;
 }
 
-.modal-title-text {
-  font-family: 'Chango', cursive;
-  color: #ffffff;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 15px rgba(0, 255, 135, 0.8);
-}
-
-.modal-body-text {
-  font-family: 'Nunito Sans', sans-serif;
-  color: #e2e8f0;
-}
-/* --- FIRMA / CRÉDITOS --- */
-.credits-signature {
-  font-family: 'Nunito Sans', sans-serif;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
-  z-index: 101;
-}
-
-.author-link {
-  color: #00ff87;
-  text-decoration: none;
-  font-weight: 700;
-  transition: all 0.3s ease;
-}
-
-.author-link:hover {
-  color: #ffffff;
-  text-shadow: 0 0 8px #00ff87, 0 0 15px #00ff87;
-  text-decoration: underline;
-}
-/* ==========================================
-   AJUSTE PARA MÓVILES (Cartas 10% más bajas)
-   ========================================== */
-@media (max-width: 576px) {
-  .memory-card {
-    /* Ajustamos la altura al 90% de su tamaño original para evitar scroll */
-    height: 90% !important; 
-    max-height: 110px; /* Ajusta según el tamaño base de tus cartas */
-  }
-}
-
-/* ==========================================
-   CONTROLES: Selector de Modo y Cronómetro
-   ========================================== */
-.mode-selector-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* Selector de Modo (Dropdown con efecto neón) */
-.glass-select {
-  background: rgba(10, 25, 20, 0.6);
-  border: 1px solid rgba(0, 255, 170, 0.4);
-  color: #a3ffdb;
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
-}
-
-.glass-select:focus, .glass-select:hover {
-  border-color: #00ffaa;
-  box-shadow: 0 0 10px rgba(0, 255, 170, 0.4);
-}
-
-.glass-select option {
-  background-color: #0d1f18;
-  color: #a3ffdb;
-}
-
-/* Cronómetro Display */
-.timer-badge {
-  background: rgba(0, 255, 170, 0.1);
-  border: 1px solid #00ffaa;
-  color: #00ffaa;
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  box-shadow: 0 0 12px rgba(0, 255, 170, 0.2);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-/* ==========================================
-   AJUSTES EXCLUSIVOS PARA MÓVILES (< 576px)
-   ========================================== */
-@media (max-width: 576px) {
-  
-  /* Apila 'Modo:' encima del selector solo en celulares */
-  .mode-selector-container {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 4px !important;
-  }
-
-  /* Ocultar el título en móviles SOLO durante la partida */
-  body:not(.game-idle) .header-container {
-    display: none !important;
-  }
-
-  /* Compactar marcadores */
-  .score-board {
-    font-size: 0.8rem !important;
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    white-space: nowrap;
-  }
-
-  .badge-neon {
-    padding: 2px 8px !important;
-    font-size: 0.85rem !important;
-  }
-
-  .timer-badge {
-    padding: 2px 10px !important;
-    font-size: 0.85rem !important;
-  }
-}
-/* ==========================================
-   LEADERBOARD & INPUT NEÓN EN MODAL
-   ========================================== */
-.text-neon-green {
-  color: #00ff87 !important;
-  text-shadow: 0 0 10px rgba(0, 255, 135, 0.7);
-}
+.custom-icon-lg { width: 85px; height: 85px; object-fit: contain; }
+.modal-title-text { font-family: 'Chango', cursive; color: #ffffff; }
+.text-neon-green { color: #00ff87 !important; }
 
 .glass-input {
   background: rgba(0, 0, 0, 0.6) !important;
@@ -531,17 +449,6 @@ body.game-idle .score-board {
   letter-spacing: 3px;
   max-width: 180px;
   border-radius: 10px;
-}
-
-.glass-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 400;
-  letter-spacing: normal;
-}
-
-.glass-input:focus {
-  box-shadow: 0 0 12px rgba(0, 255, 135, 0.8);
-  background: rgba(0, 0, 0, 0.8) !important;
 }
 
 .leaderboard-container {
@@ -559,48 +466,25 @@ body.game-idle .score-board {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.leaderboard-item:last-child {
-  border-bottom: none;
-}
-/* Ajustes para pantallas pequeñas / móviles */
-@media (max-width: 768px) {
-  .game-card {
-    height: 110px; /* Reducción proporcional para evitar scroll */
-  }
-}
-/* Animación de latido neón para el botón reiniciar */
-@keyframes neonPulse {
-  0% {
-    box-shadow: 0 0 5px #00ff87, inset 0 0 5px #00ff87;
-  }
-  50% {
-    box-shadow: 0 0 18px #00ff87, inset 0 0 10px #00ff87;
-  }
-  100% {
-    box-shadow: 0 0 5px #00ff87, inset 0 0 5px #00ff87;
-  }
+/* ==========================================
+   8. FIRMA Y AJUSTE MÓVIL
+   ========================================== */
+.credits-signature {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.btn-reiniciar, #btn-reset {
-  animation: neonPulse 2s infinite ease-in-out;
-}
+.author-link { color: #00ff87; text-decoration: none; font-weight: 700; }
 
-.btn-neon {
-  animation: neonPulse 2s infinite ease-in-out;
-}
-/* Botón Fullscreen estilo neón con letras verdes */
-#btn-fullscreen {
-  color: #00ff87 !important;                   /* Texto verde neón */
-  border: 1px solid #00ff87 !important;         /* Borde verde neón */
-  background-color: rgba(10, 15, 25, 0.7) !important; /* Fondo oscuro semi-transparente */
-  box-shadow: 0 0 8px rgba(0, 255, 135, 0.3);   /* Resplandor neón sutil */
-  backdrop-filter: blur(5px);                   /* Efecto de cristal esmerilado */
-  transition: all 0.3s ease;
-}
-
-/* Efecto cuando pasas el cursor o lo tocas */
-#btn-fullscreen:hover, #btn-fullscreen:active {
-  background-color: #00ff87 !important;
-  color: #0a0f19 !important;                    /* Texto oscuro al presionar */
-  box-shadow: 0 0 15px #00ff87;
+@media (max-width: 576px) {
+  .header-container {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  .title-word { font-size: clamp(2.5rem, 8.5vw, 4.2rem) !important; letter-spacing: 1px !important; }
+  .title-word:nth-child(2) { font-size: clamp(1.5rem, 5vw, 2.6rem) !important; }
+  .subtitle-animated { font-size: clamp(0.95rem, 3vw, 1.4rem) !important; }
 }
