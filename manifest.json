@@ -1,0 +1,22 @@
+{
+  "name": "Juego de Memoria",
+  "short_name": "Memoria",
+  "description": "Un divertido e imponente juego de memoria con neón y desafíos.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#00ff87",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "images/reverso.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "images/reverso.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
